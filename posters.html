@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DAR 海报轮播 | Posters Slider</title>
+  <link rel="icon" type="image/png" href="Logo.png" />
+  <style>
+    :root{--navy:#0b1a38;--gold:#ffcc00}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"PingFang SC","Noto Sans SC","Microsoft YaHei"}
+    header{background:#000;color:#fff}
+    .container{max-width:1100px;margin:0 auto;padding:0 20px}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+    .brand{font-weight:800;letter-spacing:.4px}
+    a{color:inherit;text-decoration:none}
+
+    .hero{background:linear-gradient(135deg,#07112a,#153e7a);color:#fff}
+    .hero .wrap{padding:40px 0}
+    .hero h1{margin:0 0 6px}
+    .hero p{margin:0;color:#cfe0ff}
+
+    /* Slider */
+    .slider-wrap{position:relative;max-width:820px;margin:28px auto 40px}
+    .frame{position:relative;overflow:hidden;border-radius:14px;border:1px solid #e8edf6;background:#000}
+    .track{display:flex;transition:transform .45s ease}
+    .slide{min-width:100%;display:flex;align-items:center;justify-content:center;background:#091224}
+    .slide img{display:block;max-width:100%;height:auto}
+    .navbtn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);color:#fff;border:none;width:42px;height:42px;border-radius:50%;cursor:pointer}
+    .navbtn:hover{background:rgba(0,0,0,.7)}
+    .prev{left:10px}
+    .next{right:10px}
+    .dots{display:flex;gap:8px;justify-content:center;margin-top:12px}
+    .dot{width:10px;height:10px;border-radius:50%;background:#c7d2e5;cursor:pointer}
+    .dot.active{background:#3b82f6}
+
+    footer{background:#000;color:#c9d2e5}
+    .footer-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0}
+
+    @media (max-width:600px){
+      .slider-wrap{max-width:94vw}
+      .navbtn{width:38px;height:38px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand">DAR Tax & Financial LLC</div>
+      <nav>
+        <a href="homepage_cn.html">返回中文主页</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container wrap">
+      <h1>海报展示（轮播）</h1>
+      <p>点击左右按钮或滑动即可切换下一张。</p>
+    </div>
+  </section>
+
+  <section class="slider-section">
+    <div class="container">
+      <div class="slider-wrap" id="slider">
+        <div class="frame">
+          <div class="track">
+            <div class="slide"><img src="SS-US.jpg" alt="美国社安金积分指南"></div>
+            <div class="slide"><img src="儿童税收抵免.png" alt="2025年儿童税收抵免"></div>
+            <div class="slide"><img src="购车贷款利息抵免.png" alt="购车贷款利息抵扣 2025-2028"></div>
+            <div class="slide"><img src="美国税务规划系列 雇佣子女.png" alt="美国税务规划系列：雇佣子女"></div>
+            <div class="slide"><img src="Retirement Account.png" alt="企业与个人的退休储蓄选项 2025"></div>
+            <div class="slide"><img src="美国劳动所得税收抵免.png" alt="美国劳动所得税收抵免 EITC"></div>
+            <div class="slide"><img src="OBBB大而美法案.png" alt="大而美法案 税务重点变化"></div>
+            <div class="slide"><img src="ITIN申请.png" alt="ITIN申请"></div>
+          </div>
+          <button class="navbtn prev" aria-label="上一张">&#10094;</button>
+          <button class="navbtn next" aria-label="下一张">&#10095;</button>
+        </div>
+        <div class="dots" aria-label="选择页码"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <div>© <span id="year"></span> DAR Tax & Financial LLC. All rights reserved.</div>
+      <div style="opacity:.8">Tax • Payroll • Financial Reports • Retirement Planning • ITIN • Business Formation</div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const slider = document.getElementById('slider');
+    const track = slider.querySelector('.track');
+    const slides = Array.from(slider.querySelectorAll('.slide'));
+    const btnPrev = slider.querySelector('.prev');
+    const btnNext = slider.querySelector('.next');
+    const dotsWrap = slider.querySelector('.dots');
+
+    let index = 0;
+    const total = slides.length;
+
+    // dots
+    for(let i=0;i<total;i++){
+      const d = document.createElement('div');
+      d.className = 'dot' + (i===0?' active':'');
+      d.addEventListener('click',()=>go(i));
+      dotsWrap.appendChild(d);
+    }
+    const dots = Array.from(dotsWrap.children);
+
+    function update(){
+      track.style.transform = `translateX(${-index*100}%)`;
+      dots.forEach((dot,i)=>dot.classList.toggle('active', i===index));
+    }
+    function go(i){
+      index = (i+total)%total;
+      update();
+    }
+    btnPrev.addEventListener('click', ()=>go(index-1));
+    btnNext.addEventListener('click', ()=>go(index+1));
+
+    // keyboard
+    window.addEventListener('keydown', (e)=>{
+      if(e.key==='ArrowRight') go(index+1);
+      if(e.key==='ArrowLeft') go(index-1);
+    });
+
+    // touch / swipe
+    let startX=0, dx=0;
+    track.addEventListener('touchstart', (e)=>{startX = e.touches[0].clientX; dx=0;}, {passive:true});
+    track.addEventListener('touchmove', (e)=>{dx = e.touches[0].clientX - startX;}, {passive:true});
+    track.addEventListener('touchend', ()=>{
+      if (Math.abs(dx) > 50){
+        if (dx<0) go(index+1); else go(index-1);
+      }
+    });
+  </script>
+</body>
+</html>
